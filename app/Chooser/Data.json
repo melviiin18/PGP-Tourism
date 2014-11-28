@@ -1,0 +1,64 @@
+[
+    {
+        name: 'Tourism Attraction',
+        thumb: 'Tattract.png',
+        url: 'dot_tourattract',
+        tooltip: '',
+		isWms:true	
+    },	
+	 	
+	{
+        name: 'Hotels',
+        thumb: 'lodging.png',
+        url: 'hotel',
+        tooltip: '',
+		isWms:false	
+    },	
+	{
+        name: 'Hospitals/Health Centers',
+        thumb: 'hospital.png',
+        url: 'doh_hospitalrhu',
+        tooltip: '',
+		isWms:true	
+    },	
+	{
+        name: 'Schools',
+        thumb: 'school.png',
+        url: 'deped_beis',
+        tooltip: '',
+		isWms:true	
+    },		
+	{
+        name: 'Airports',
+        thumb: 'airport.png',
+        url: 'dotc_nationalairports',
+        tooltip: '',
+		isWms:true	
+    },
+	{
+        name: 'Nautical Ports',
+        thumb: 'nauticalport.png',
+        url: 'dpwh_nauticalport',
+        tooltip: '',
+		isWms:true	
+    },			
+	{
+        name: 'Bus Stations',
+        thumb: 'bus.png',
+        url: 'bus station',
+        tooltip: '',
+		isWms:false
+    },	
+	{
+        name: 'Train Stations',
+        thumb: 'train.png',
+        url: 'railstation10k',
+        tooltip: '',
+		isWms:true	
+    }
+	
+]
+
+
+
+
