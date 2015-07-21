@@ -39,6 +39,7 @@ Ext.define('MyPath.Chooser.Window', {
 		var layer = selectedImage.data.url;
 		var isWMS=	selectedImage.data.isWms;
 		var type = layer;		
+		
 		if(this.mappanel.map.getLayersByName(layername).length > 0) {				
 			this.mappanel.map.getLayersByName(layername)[0].destroy();		
 			
@@ -93,7 +94,7 @@ Ext.define('MyPath.Chooser.Window', {
 			var top = me.mappanel.map.getExtent().transform('EPSG:900913', 'EPSG:4326').top
 			var right = me.mappanel.map.getExtent().transform('EPSG:900913', 'EPSG:4326').right
 			
-			console.log('EXTENTTTTTT---',me.mappanel.map.getExtent().transform('EPSG:900913', 'EPSG:4326'));
+			
 
 			 var bounds = new google.maps.LatLngBounds(
 			    new google.maps.LatLng(bott,left), 
@@ -101,19 +102,7 @@ Ext.define('MyPath.Chooser.Window', {
 			);  
 			
 			
-			
-			//test
-				var Goog =  new OpenLayers.Layer.Image(
-                'City Lights',
-                './app/chooser/icons/PG.png',
-                //new OpenLayers.Bounds(left,bott,right, top),
-				new  OpenLayers.Bounds( 14.53363357484175, 121.03898668031596,14.534036204139772,121.03908175221152),
-                new OpenLayers.Size(100000000, 10000000000),
-                {displayInLayerSwitcher: false, isBaseLayer:false, visible:true, alwaysInRange: true}
-            );
-			console.log(Goog);
-			this.mappanel.map.addLayer(Goog);
-			//end test	
+
 			
 			/* var type
 			
@@ -122,8 +111,6 @@ Ext.define('MyPath.Chooser.Window', {
 			}else{
 				type='bus station'
 			} */
-			
-			
 			
 			var request = {				
 				location:bounds.getCenter(),
@@ -135,19 +122,38 @@ Ext.define('MyPath.Chooser.Window', {
 			};			
 			var service = new google.maps.places.PlacesService(me.mappanel.map.baseLayer.div);			
 			service.nearbySearch(request, function callback(results, status, pagination){
+					
 					if (status == google.maps.places.PlacesServiceStatus.OK) {																		
 						me.createMarker(results, vectorLayer, icon);									
 					 }								
 				    if (pagination.hasNextPage) {
 						pagination.nextPage();
 					} 				  										
-			});	 			
-
-			
-			
+			});	 					
 		
 		}else{		
 		
+						
+			//change the PEC layername to PES then load the PHS layer			    
+			if (layername.indexOf('School')>-1){			
+				layername = 'Public Elementary School'			
+				
+				var Layer2 = new OpenLayers.Layer.WMS(
+					'Public High School',
+					'http://geoserver.namria.gov.ph/geoserver/geoportal/wms', 
+					{
+						layers:'depedpublichs_updated_052014',				
+						transparent:true						
+					},
+					{
+						//isBaseLayer:false,
+						opacity:.7
+					}
+				); 		
+				this.mappanel.map.addLayer(Layer2);		
+			}
+			
+				
 			 var Layer1 = new OpenLayers.Layer.WMS(
 				layername,
 				'http://geoserver.namria.gov.ph/geoserver/geoportal/wms',
@@ -166,9 +172,11 @@ Ext.define('MyPath.Chooser.Window', {
 	
 	},
 	createMarker: function(place, vLayer, icon){			
-		var pointFeatures=[]		
+		var pointFeatures=[]
+		console.log(place);		
 	     for (var i = 0; i < place.length; i++) {		   
-		   var point = new OpenLayers.Geometry.Point(place[i].geometry.location.B,place[i].geometry.location.k).transform('EPSG:4326','EPSG:900913')
+			 
+		   var point = new OpenLayers.Geometry.Point(place[i].geometry.location.F,place[i].geometry.location.A).transform('EPSG:4326','EPSG:900913')
 		   var PointAttr = {'name':place[i].name,'type':place[i].types[0], 'vicinity':place[i].vicinity }
 		   var pointFeature = new OpenLayers.Feature.Vector(point, PointAttr, {
 				pointRadius: 16,

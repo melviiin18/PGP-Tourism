@@ -10,21 +10,19 @@ Ext.define('MyPath.Routing',{
 	autoScroll:true,
 	bodyPadding:10,
 	findRoute:function(Srclat, Srclong, Destlat, Destlong, callback){
-			
+		var url = 'http://www.yournavigation.org/api/1.0/gosmore.php' +
+					'?&flat=' + Srclat +  
+					'&flon=' + Srclong +
+					'&tlat=' + Destlat + 
+					'&tlon=' + Destlong +  
+					'&v=motorcar&fast=0&layer=mapnik&instructions=1&format=geojson'
+		url = url = "/webapi/get.ashx?url=" + escape(url);			
 		Ext.Ajax.request({			
-			 url : 'http://202.90.149.231:8000/www.yournavigation.org/api/1.0/gosmore.php' +
-						'?&flat=' + Srclat +  
-						'&flon=' + Srclong +
-						'&tlat=' + Destlat + 
-						'&tlon=' + Destlong +  
-						'&v=motorcar&fast=0&layer=mapnik&instructions=1&format=geojson', 					
-			
-			//url:'http://localhost:3000/www.yournavigation.org/api/1.0/gosmore.php?format=kml&flat=14.5176184&flon=121.05086449999999&tlat=14.1876712&tlon=121.12508249999996&v=motorcar&fast=1&layer=mapnik&instructions=1&format=geojson',
+			 url : url, 								
+			//url:'http://localhost:3000/www.yournavigation.org/api/1.0/gosmore.php?format=kml&flat=14.5176184&flon=121.05086449999999&tlat=14.1876712&tlon=121.12508249999996&v=motorcar&fast=1&layer=mapnik&instructions=1&format=geojson',			
 			success: function(response){
-				var obj = Ext.decode(response.responseText);		
-				//console.log(obj);	
+				var obj = Ext.decode(response.responseText);			
 				callback(obj);					
-				
 			},
 				failure: function(response){
 				var obj = Ext.decode(response.responseText);				
@@ -58,21 +56,18 @@ Ext.define('MyPath.Routing',{
 				value: '',				
 				itemId: 'PntA',
 				emptyText:'e.g. Street, City',
-				width:300,
-				labelPad:10,
-				fieldLabel: 'Origin', 
-				labelAlign:'right',
-				labelWidth:80,
+				width:320,								
+				fieldLabel: '<img STYLE="position:absolute; TOP:2px; LEFT:85px; WIDTH:25px; HEIGHT:25px" src="./icons/org.png" class="info_image" data-qtip="your help text or even html comes here...."></img>Origin', 
 			},{
 				xtype: 'textfield',
 				value:'',
-				labelPad:10,
-				width:300,
+				
+				width:320,
 				itemId: 'PntB',	
 				emptyText:'e.g. Street, City',				
-				fieldLabel: 'Destination',
-				labelAlign:'right', 	
-				labelWidth:80,				
+				fieldLabel: '<img STYLE="position:absolute; TOP:35px; LEFT:85px; WIDTH:20px; HEIGHT:20px" src="./icons/dest.png" class="info_image" data-qtip="your help text or even html comes here...."></img> Destination ',
+				
+				
 			}];				
 	},
 	buildButtons:function(){
@@ -111,11 +106,35 @@ Ext.define('MyPath.Routing',{
 									var Apoints=[];		
 									for(var i in coords){
 										var coordinate = coords[i];
-										Apoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));											
+										Apoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));																					
 									} 									
 									var lineString = new OpenLayers.Geometry.LineString(Apoints).transform('EPSG:4326', 'EPSG:900913');
+									//
+									var origin = lineString.components[0]
+									var lastIndex = Apoints.length
+									console.log(lastIndex);
+									var destination = lineString.components[lastIndex-1]
+									console.log(destination)
+									
+									var style2 = {
+										externalGraphic: "./icons/org.png",				
+										graphicYOffset: -25,
+										graphicHeight: 35,		
+										graphicTitle:'Origin',						
+									}
+									var style3 = {
+										externalGraphic: "./icons/dest.png",				
+										graphicYOffset: -25,
+										graphicHeight: 35,		
+										graphicTitle:'Destination',						
+									}
+									
+									//	
+									
 									var lineFeatures = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Collection([lineString]));	
-									vectorLayer.addFeatures([lineFeatures]);
+									origin = new OpenLayers.Feature.Vector(origin, null, style2);	
+									destination = new OpenLayers.Feature.Vector(destination, null, style3);	
+									vectorLayer.addFeatures([lineFeatures, origin, destination]);
 									me.mapContainer.map.addLayers([vectorLayer]);																
 									me.mapContainer.map.zoomToExtent(vectorLayer.getDataExtent());	
 										

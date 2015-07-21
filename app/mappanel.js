@@ -101,7 +101,7 @@ Ext.define('MyPath.mappanel',{
 				}			
 			},{			
 				xtype:'button',
-				tooltip:'Max Extent',
+				tooltip:'Full extent',
 				icon:'./app/chooser/icons/phil.png',
 				scale:'medium',
 				handler:function(){
@@ -177,11 +177,11 @@ Ext.define('MyPath.mappanel',{
 		
 		
 		 map.events.register("mousemove", map, function (e) {            
-			/*var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
+			/* var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
 			//console.log(point.lon, point.lat)
 			var pos = new OpenLayers.LonLat(point.lon,point.lat).transform('EPSG:900913', 'EPSG:4326');
-			console.log(pos);
-			OpenLayers.Strategy.Refresh*/
+			console.log(pos);*/
+			OpenLayers.Strategy.Refresh
 		}); 
 		
 		
@@ -204,28 +204,44 @@ Ext.define('MyPath.mappanel',{
 					}				
 				} 
 				
-				var topLayer = map.layers[mapIndex].params.LAYERS									
-				var url = "http://202.90.149.231:8000/geoserver.namria.gov.ph/geoserver/geoportal/wms" 
-						  + "?REQUEST=GetFeatureInfo"
-						  + "&EXCEPTIONS=application/vnd.ogc.se_xml"
-						  + "&SERVICE=WMS&VERSION=1.1.1"
-						  + "&BBOX=" + map.getExtent().toBBOX()
-						  + "&X=" + Math.round(e.xy.x)
-						  + "&Y=" + Math.round(e.xy.y)
-						  + "&INFO_FORMAT=application/json"					  
-						  + "&QUERY_LAYERS=" + topLayer
-						  + "&LAYERS=" + topLayer
-						  + "&FEATURE_COUNT=10"
-						  + "&SRS=EPSG:900913"
-						  + "&STYLES="
-						  + "&WIDTH=" + map.size.w
-						  + "&HEIGHT=" + map.size.h;				
+				var topLayer = map.layers[mapIndex].params									
+				console.log(topLayer)
+				var url = "http://geoserver.namria.gov.ph/geoserver/geoportal/wms?" +
+						    "request=GetFeatureInfo" + 
+							"&service=WMS" + 
+							"&version=1.1.1" + 
+							"&layers=" + topLayer.LAYERS + 
+							"&styles=" + topLayer.STYLES +  
+							"&srs=" + topLayer.SRS + 			
+							"&format=" + topLayer.FORMAT +							
+							"&bbox=" + map.getExtent().toBBOX() +
+							"&width=" + map.size.w + 
+							"&height=" + map.size.h + 
+							"&query_layers=geoportal:" + topLayer.LAYERS + 
+							"&info_format=application/json" + 
+							"&feature_count=" + 10 + 
+							"&x=" + Math.round(e.xy.x) + 
+							"&y=" + Math.round(e.xy.y) + 
+							"&exceptions=application/json";
+					url = "/webapi/get.ashx?url=" + escape(url);	
+					
 						me.execUrl(url, function(callback){										
 								if (callback.features.length > 0){							
-									var pos =  e.xy									
+									console.log(e);
+									var pos =  e.xy	
+									
+									var feature =callback.features[0]
+									var layer_config = MyPath.Utilities.getLayerConfig(topLayer.LAYERS, topLayer.STYLES );	
+									console.log(layer_config);
+									var data = {};
+									Ext.each(layer_config.config, function(item, index){
+										data[item.alias] = feature.properties[item.attribute];
+									});
+									
 									if (popup) {
 										popup.close();
 									}
+									//console.log(callback.features[0].properties)
 									popup = Ext.create('GeoExt.window.Popup', {
 										title: "Feature Information",
 										location: pos,
@@ -234,7 +250,8 @@ Ext.define('MyPath.mappanel',{
 										height:150,							
 										items: {
 											xtype:'propertygrid',
-											source:callback.features[0].properties,
+											//source:callback.features[0].properties,
+											source:data,
 											hideHeaders: false,
 											sortableColumns: false
 										},

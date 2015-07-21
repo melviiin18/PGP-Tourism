@@ -1,6 +1,6 @@
 [
     {
-        name: 'Tourism Attraction',
+        name: 'Tourism attraction',
         thumb: 'Tattract.png',
         url: 'dot_tourattract',
         tooltip: '',
@@ -11,32 +11,26 @@
         name: 'Hotels',
         thumb: 'lodging.png',
         url: 'hotel',
-        tooltip: '',
+        tooltip: 'Powered by Google Places API',
 		isWms:false	
     },	
-	{
-        name: 'Hospitals/Health Centers',
-        thumb: 'hospital.png',
-        url: 'doh_hospitalrhu',
-        tooltip: '',
-		isWms:true	
-    },	
+	
 	{
         name: 'Schools',
         thumb: 'school.png',
-        url: 'deped_beis',
+        url: 'depedpublices_updated_052014',
         tooltip: '',
 		isWms:true	
     },		
 	{
-        name: 'Airports',
+        name: 'National airport',
         thumb: 'airport.png',
         url: 'dotc_nationalairports',
         tooltip: '',
 		isWms:true	
     },
 	{
-        name: 'Nautical Ports',
+        name: 'Nautical port',
         thumb: 'nauticalport.png',
         url: 'dpwh_nauticalport',
         tooltip: '',
@@ -46,17 +40,16 @@
         name: 'Bus Stations',
         thumb: 'bus.png',
         url: 'bus station',
-        tooltip: '',
+        tooltip: 'Powered by Google Places API',
 		isWms:false
-    },	
+    },		
 	{
-        name: 'Train Stations',
-        thumb: 'train.png',
-        url: 'railstation10k',
+        name: 'Hospital andHealth<br>Center (DOH)',
+        thumb: 'hospital.png',
+        url: 'hf_updated_02112015',
         tooltip: '',
 		isWms:true	
-    }
-	
+    },	
 ]
 
 
