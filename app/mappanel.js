@@ -176,19 +176,17 @@ Ext.define('MyPath.mappanel',{
 		
 		
 		
-		 map.events.register("mousemove", map, function (e) {            
+		 /* map.events.register("mousemove", map, function (e) {            
 			/* var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
 			//console.log(point.lon, point.lat)
 			var pos = new OpenLayers.LonLat(point.lon,point.lat).transform('EPSG:900913', 'EPSG:4326');
-			console.log(pos);*/
+			console.log(pos);
 			OpenLayers.Strategy.Refresh
-		}); 
+		});  */
 		
 		
 		
 		map.events.register('click', map, function(e){		
-			
-			
 			
 			var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
 			var pos = new OpenLayers.LonLat(point.lon,point.lat).transform('EPSG:900913', 'EPSG:4326');
@@ -224,7 +222,6 @@ Ext.define('MyPath.mappanel',{
 							"&y=" + Math.round(e.xy.y) + 
 							"&exceptions=application/json";
 					url = "/webapi/get.ashx?url=" + escape(url);	
-					
 						me.execUrl(url, function(callback){										
 								if (callback.features.length > 0){							
 									console.log(e);
