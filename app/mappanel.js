@@ -240,11 +240,12 @@ Ext.define('MyPath.mappanel',{
 									}
 									//console.log(callback.features[0].properties)
 									popup = Ext.create('GeoExt.window.Popup', {
-										title: "Feature Information",
+										title:layer_config.title,
+										maximizable: false,	
 										location: pos,
 										map:map,	
 										width: 300,	
-										height:150,							
+										maxHeight: 300,							
 										items: {
 											xtype:'propertygrid',
 											//source:callback.features[0].properties,
