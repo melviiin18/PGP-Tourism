@@ -171,6 +171,8 @@ Ext.define('MyPath.Chooser.Window', {
 	
 	
 	},
+	
+
 	createMarker: function(place, vLayer, icon){			
 		var pointFeatures=[]
 		console.log(place);		

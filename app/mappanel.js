@@ -105,12 +105,35 @@ Ext.define('MyPath.mappanel',{
 				icon:'./app/chooser/icons/phil.png',
 				scale:'medium',
 				handler:function(){
-					var me=this.up().up();				
+					//original settings
+					/* var me=this.up().up();				
 					console.log(me);
-					me.map.zoomToMaxExtent();	
+					me.map.zoomToMaxExtent(); */
 					
-				}	
-			},		
+					//added 4 sept 2015
+					var me=this.up().up();				
+					OthoExtent = new OpenLayers.Bounds(120.613472,14.295979, 121.550385,14.827789).transform('EPSG:4326','EPSG:900913')
+					
+					var lonlat = new OpenLayers.LonLat(121,14).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913"));
+					map.setCenter(lonlat);
+					if (map.baseLayer.name=="BING Aerial Map")
+						map.zoomTo(5);
+					else if (map.baseLayer.name=="OpenStreetMap")					  
+						map.zoomTo(6);
+					else if (map.baseLayer.name=="Google Map - Satellite")
+						map.zoomTo(6);
+					else if (map.baseLayer.name=="ArcGIS Online - Imagery")
+						map.zoomTo(6);		
+					else if (map.baseLayer.name=="Ortho Image 2011 - Metro Manila")	
+						map.zoomToExtent(OthoExtent);
+					else
+						map.zoomTo(1);
+						
+				}
+					//
+					
+			},	
+				
 			
 			{			
 				xtype:'button',
@@ -128,6 +151,95 @@ Ext.define('MyPath.mappanel',{
 					
 				}		
 			
+			},
+			'->',
+		
+			{
+				//xtype:'label',
+				
+				xtype:'tbtext',
+				text: 'Basemap: NAMRIA Basemaps'
+				
+			},
+			'->',
+			{
+				xtype:'button',
+				scale:'large',
+				itemId:'btnSwitch',
+				icon:'./icons/layers.png',				
+				width:68,
+				height:30,	
+				tooltip:'Switch basemap',
+				menu     : [
+					{
+						text: 'Philippine Geoportal',
+						group: 'basemap',
+						checked: true,
+						handler: function(){
+							map.setBaseLayer(map.layers[0]);
+							this.up().up().up().items.items[7].setText('Basemap : ' + this.text);
+							
+						}
+					},
+					{
+						text: 'Ortho Image 2011 - Metro Manila',
+						disable: true,
+						group: 'basemap',
+						checked: false,
+						handler: function(){
+							map.setBaseLayer(map.layers[1]);
+							this.up().up().up().items.items[7].setText('Basemap : ' + this.text);				
+							//OthoExtent = new OpenLayers.Bounds(120.613472,14.295979, 121.550385,14.827789).transform('EPSG:4326','EPSG:900913')
+							//map.zoomToExtent(OthoExtent);	
+							
+						}
+					},
+					{
+						text: 'Bing Maps - Aerial',
+						disable: true,
+						group: 'basemap',
+						checked: false,
+						handler: function(){
+							map.setBaseLayer(map.layers[2]);
+							this.up().up().up().items.items[7].setText('Basemap : ' + this.text);
+							
+						}
+					},
+					{
+						text: 'ArcGIS Online - Aerial',
+						disable: true,
+						group: 'basemap',
+						checked: false,
+						handler: function(){
+							map.setBaseLayer(map.layers[3]);
+							this.up().up().up().items.items[7].setText('Basemap : ' + this.text);
+						}
+					},
+					{
+						text: 'Open Street Map',
+						group: 'basemap',
+						checked: false,
+						handler: function(){
+							map.setBaseLayer(map.layers[4]);
+							this.up().up().up().items.items[7].setText('Basemap : ' + this.text);
+						}
+					},
+					{
+						text: 'Google Map - Satellite',
+						group: 'basemap',
+						checked: false,
+						handler: function(){
+							map.setBaseLayer(map.layers[5]);
+							this.up().up().up().items.items[7].setText('Basemap : ' + this.text);
+						}
+					},
+						
+					'-',
+					{
+						text: '&nbsp &nbsp &nbsp &nbsp<b>NOTE:</b><br/>&nbsp &nbsp &nbsp &nbspWE HAVE OBSERVED SOME DISCREPANCIES <br/>&nbsp &nbsp &nbsp &nbspBY AS MUCH AS 10 METERS WHEN USING BASEMAPS<br/>&nbsp &nbsp &nbsp &nbspOTHER THAN THE NAMRIA BASEMAPS AND<br/>&nbsp &nbsp &nbsp &nbspORTHO IMAGE 2011-METRO MANILA.  USERS ARE <br/>&nbsp &nbsp &nbsp &nbspADVISED TO TAKE THE NECESSARY PRECAUTIONS<br/>&nbsp &nbsp &nbsp &nbspESPECIALLY WHEN VIEWING THE ACTIVE FAULTS<br/>&nbsp &nbsp &nbsp &nbsp(VALLEY FAULT SYSTEM) USING OTHER BASEMAPS.',
+						plain: true
+					}
+				]
 			}
 		]	
 	},
@@ -150,7 +262,31 @@ Ext.define('MyPath.mappanel',{
 				projection: 'EPSG:900913'
 				
 		});		
-		        
+		//Map config
+		var maxExtent = new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34);
+		//var layerMaxExtent = new OpenLayers.Bounds(11128623.5489416,-55718.7227285097,16484559.8541582,3072210.74548981);
+		var layerMaxExtent = new OpenLayers.Bounds( 11516520.903064, 482870.29798867,  15821300.345956,  2448728.3963715);		
+		var units = 'm';
+		var resolutions = [ 3968.75793751588, 
+							2645.83862501058, 
+							1322.91931250529, 
+							661.459656252646, 
+							264.583862501058, 
+							132.291931250529, 
+							66.1459656252646, 
+							26.4583862501058, 
+							13.2291931250529, 
+							6.61459656252646, 
+							2.64583862501058, 
+							1.32291931250529, 
+							0.661459656252646 ];
+		var tileSize = new OpenLayers.Size(256, 256);
+		var projection = 'EPSG:900913';
+		var tileOrigin = new OpenLayers.LonLat(-20037508.342787,20037508.342787);
+		//
+
+
+        //PGP Basemap
        var pgp_basemap_cache = new OpenLayers.Layer.NAMRIA(
 				'NAMRIA Basemap',
 				'http://202.90.149.252/ArcGIS/rest/services/Basemap/PGS_Basemap/MapServer',
@@ -160,7 +296,81 @@ Ext.define('MyPath.mappanel',{
 				}
 		);
 			
+		//Ortho
+		var pgp_ortho_mm_cache = new OpenLayers.Layer.ArcGISCache( "Ortho Image 2011 - Metro Manila",
+			"http://202.90.149.252/ArcGIS/rest/services/Basemap/PGS_OrthoImage/MapServer", {
+			//"http://202.90.149.252/ArcGIS/rest/services/Basemap/PGS_Basemap/MapServer", {
+			isBaseLayer: true,
+
+			//From layerInfo above                        
+			resolutions: resolutions,                        
+			tileSize: tileSize,
+			tileOrigin: tileOrigin,
+			maxExtent: layerMaxExtent, 
+			projection: projection,
+			displayInLayerSwitcher: false
+		},
+		{
+			//additional options
+			transitionEffect: "resize"
+		});
 			
+		//Bing
+		
+		var bing_aerial = new OpenLayers.Layer.Bing({
+			name: "BING Aerial Map",
+			key: 'AkRWcFAhv1-J1MxSfE5URc4jiUjoL96_frNidZic_5fLeQ54al4UqXcKKr04l2ud',
+			type: "Aerial",
+			displayInLayerSwitcher: false
+			
+		}, {
+			isBaseLayer: true,
+			visibility: false,
+			transitionEffect: "resize"
+		});
+		
+		//ArcGIS
+		
+		var arcgis_world_imagery = new OpenLayers.Layer.ArcGIS93Rest("ArcGIS Online - Imagery", 
+		'http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export',
+		{
+			layers: 'show:0,1,2,3',
+			format: 'png24'
+		}, 
+		{
+			//additional options
+			transitionEffect: "resize",
+			isBaseLayer: true,
+			displayInLayerSwitcher: false
+		});
+		
+		//Open Street Map
+		var osm  = new OpenLayers.Layer.OSM("","",
+		{
+			sphericalMercator: true,
+			transitionEffect: "resize",
+			isBaseLayer: true,
+			displayInLayerSwitcher: false
+		});	
+		
+			
+	   //Google
+	   var google_satellite = new OpenLayers.Layer.Google(
+                "Google Map - Satellite",
+                {
+					type: google.maps.MapTypeId.SATELLITE, 
+					numZoomLevels: 22,
+					sphericalMercator: true,
+					transitionEffect: "resize",
+					isBaseLayer: true,
+					displayInLayerSwitcher: false
+				}
+        );
+
+
+
+
+		
 		var Location = new OpenLayers.Layer.Vector('My Location', {
 		 displayInLayerSwitcher: false,		
 		});	
@@ -171,95 +381,155 @@ Ext.define('MyPath.mappanel',{
 		
 		
 		
-		map.addLayers([pgp_basemap_cache, Location, Location2]);		
+		map.addLayers([pgp_basemap_cache,pgp_ortho_mm_cache,bing_aerial, arcgis_world_imagery, osm, google_satellite, Location, Location2]);		
 		map.zoomToMaxExtent()		
 		
 		
-		
-		 /* map.events.register("mousemove", map, function (e) {            
-			/* var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
-			//console.log(point.lon, point.lat)
-			var pos = new OpenLayers.LonLat(point.lon,point.lat).transform('EPSG:900913', 'EPSG:4326');
-			console.log(pos);
-			OpenLayers.Strategy.Refresh
-		});  */
-		
-		
-		
-		map.events.register('click', map, function(e){		
-			
-			var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
-			var pos = new OpenLayers.LonLat(point.lon,point.lat).transform('EPSG:900913', 'EPSG:4326');
-			
-			if (map.layers.length > 1) {
-			
-				mapIndex = map.layers.length-1
-				
-				if (map.layers[mapIndex].name=='My Location' || map.layers[mapIndex].name=='Gcode'){
-					mapIndex=mapIndex-1
-					if (map.layers[mapIndex].name=='My Location' || map.layers[mapIndex].name=='Gcode'){
-						mapIndex=mapIndex-1
-					}				
-				} 
-				
-				var topLayer = map.layers[mapIndex].params									
-				console.log(topLayer)
-				var url = "http://geoserver.namria.gov.ph/geoserver/geoportal/wms?" +
-						    "request=GetFeatureInfo" + 
+		//new identify feature 
+			OpenLayers.Control.PGSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {                
+			defaultHandlerOptions: {
+				'single': true,
+				'double': false,
+				'pixelTolerance': 0,
+				'stopSingle': false,
+				'stopDouble': false
+			},
+			maxFeatures: 1,
+			queryVisible: true,
+			initialize: function(options) {
+				this.handlerOptions = OpenLayers.Util.extend(
+					{}, this.defaultHandlerOptions
+				);
+				OpenLayers.Control.prototype.initialize.apply(
+					this, arguments
+				); 
+				this.handler = new OpenLayers.Handler.Click(
+					this, {
+						'click': this.click
+					}, this.handlerOptions
+				);
+			}, 
+			queryLayer: function(e, layer){
+				console.log(layer);
+				var layer_name = (layer.params.LAYERS || layer.params.layers).replace("geoportal:","");
+				var url = layer.url + "?" + 
+							"request=GetFeatureInfo" + 
 							"&service=WMS" + 
 							"&version=1.1.1" + 
-							"&layers=" + topLayer.LAYERS + 
-							"&styles=" + topLayer.STYLES +  
-							"&srs=" + topLayer.SRS + 			
-							"&format=" + topLayer.FORMAT +							
-							"&bbox=" + map.getExtent().toBBOX() +
-							"&width=" + map.size.w + 
-							"&height=" + map.size.h + 
-							"&query_layers=geoportal:" + topLayer.LAYERS + 
+							"&layers=" + layer_name + 
+							//"&styles=" + (layer.params.STYLES || layer.params.styles) +  
+							"&srs=" + (layer.params.SRS || layer.params.srs) + 
+							"&format=" + (layer.params.FORMAT || layer.params.format) + 
+							"&bbox=" + map.getExtent().toString()+  
+							"&width=" + map.getSize().w + 
+							"&height=" + map.getSize().h + 
+							"&query_layers=" + (layer.params.LAYERS || layer.params.layers) + 
 							"&info_format=application/json" + 
-							"&feature_count=" + 10 + 
-							"&x=" + Math.round(e.xy.x) + 
-							"&y=" + Math.round(e.xy.y) + 
+							"&feature_count=" + this.maxFeatures + 
+							"&x=" + e.xy.x + 
+							"&y=" + e.xy.y + 
 							"&exceptions=application/json";
-					url = "/webapi/get.ashx?url=" + escape(url);	
-						me.execUrl(url, function(callback){										
-								if (callback.features.length > 0){							
-									console.log(e);
-									var pos =  e.xy	
-									
-									var feature =callback.features[0]
-									var layer_config = MyPath.Utilities.getLayerConfig(topLayer.LAYERS, topLayer.STYLES );	
-									console.log(layer_config);
-									var data = {};
-									Ext.each(layer_config.config, function(item, index){
-										data[item.alias] = feature.properties[item.attribute];
-									});
-									
-									if (popup) {
-										popup.close();
-									}
-									//console.log(callback.features[0].properties)
-									popup = Ext.create('GeoExt.window.Popup', {
-										title:layer_config.title,
-										maximizable: false,	
-										location: pos,
-										map:map,	
-										width: 300,	
-										maxHeight: 300,							
-										items: {
-											xtype:'propertygrid',
-											//source:callback.features[0].properties,
-											source:data,
-											hideHeaders: false,
-											sortableColumns: false
-										},
-										autoScroll: true
-									})
-									popup.show();
-								}									
-						})						
+							//"&exceptions=application%2Fvnd.ogc.se_xml";
+				
+				var retVal;
+				
+				// temporary fix 24 SEP 2014 ghelo
+				//url = url.replace('geoserver.namria.gov.ph','202.90.149.232');
+				//
+				console.log(url);
+
+				
+				
+				Ext.Ajax.request({
+					async: false,
+					url: '/webapi/get.ashx?url=' + escape(url),
+					success: function(response){
+						var obj = Ext.decode(response.responseText);	
+						retVal = obj.features;
+						
+ 					},
+					failure:function(res){
+						console.log(res);
+					}
+				});
+				
+				return retVal;
+			},
+			click: function(e) {				
+				OpenLayers.Element.addClass(this.map.viewPortDiv, "olCursorWait");
+				
+				for(var index = map.layers.length-1;index >= 0;index--){
+					var layer = this.map.layers[index];
+					
+					if(layer instanceof OpenLayers.Layer.WMS &&
+						(!this.queryVisible || layer.getVisibility())) {
+						// make sure this is a WMS layer and the layer is visible
+						var features = this.queryLayer(e, layer);
+						console.log('FEATURES', features);
+						if(features.length == 0)
+							continue;
+						this.events.triggerEvent("getfeatureinfo", {xy: e.xy, 
+																	layerName: (layer.params.LAYERS || layer.params.layers), 
+																	layerTitle: layer.name, 
+																	style: (layer.params.STYLES || layer.params.styles),
+																	features: features});	
+						OpenLayers.Element.removeClass(this.map.viewPortDiv, "olCursorWait");
+						break;
+					}
+				}
+				
+				OpenLayers.Element.removeClass(this.map.viewPortDiv, "olCursorWait");
+				
 			}
-		});  
+
+		});
+		
+		
+		
+			var pgsGetFeatureInfo = new OpenLayers.Control.PGSGetFeatureInfo({
+				eventListeners: {
+					'getfeatureinfo' : function(e){
+					
+						if(e.features.length == 0)
+							return;
+							
+						var feature = e.features[0];
+					
+						var layer_name = e.layerName.replace("geoportal:","");
+						var style = e.style;
+						var layer_config = MyPath.Utilities.getLayerConfig(layer_name, style);
+						console.log(layer_name);
+						var data = {};
+						Ext.each(layer_config.config, function(item, index){
+							data[item.alias] = feature.properties[item.attribute];
+						});
+
+						var popup = Ext.create('GeoExt.window.Popup', {
+							maximizable: false,
+							collapsible: true,
+							anchorPosition: 'top-left',
+							title: layer_config.title,
+							maxHeight: 300,
+							width: 250,
+							layout: "fit",
+							map: map,
+							location: e.xy,
+							items: {
+								xtype:'propertygrid',
+								source: data,
+								hideHeaders: false,
+								sortableColumns: false
+							}
+						});
+						popup.show();
+					}
+				}
+		});
+		map.addControl(pgsGetFeatureInfo);
+		pgsGetFeatureInfo.activate();
+		
+		//
+
 		
 		Ext.apply(this, {
 			map:map,
