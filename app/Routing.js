@@ -79,8 +79,8 @@ Ext.define('MyPath.Routing',{
 			
 				var me = this.up('panel');					
 				me.update('');
-				if  (me.mapContainer.map.getLayersByName('Route').length > 0) {				
-					 me.mapContainer.map.getLayersByName('Route')[0].destroy();					
+				if  (map.getLayersByName('Route').length > 0) {				
+					 map.getLayersByName('Route')[0].destroy();					
 				}				
 				
 				var pnt1 = me.getComponent('PntA').getValue();				
@@ -135,8 +135,8 @@ Ext.define('MyPath.Routing',{
 									origin = new OpenLayers.Feature.Vector(origin, null, style2);	
 									destination = new OpenLayers.Feature.Vector(destination, null, style3);	
 									vectorLayer.addFeatures([lineFeatures, origin, destination]);
-									me.mapContainer.map.addLayers([vectorLayer]);																
-									me.mapContainer.map.zoomToExtent(vectorLayer.getDataExtent());	
+									map.addLayers([vectorLayer]);																
+									map.zoomToExtent(vectorLayer.getDataExtent());	
 										
 									
 								})

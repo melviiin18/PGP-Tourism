@@ -22,7 +22,7 @@ Ext.define('MyPath.mappanel',{
 	},
 	gCode:function(addr, callback){	  
 				var geocoder = new google.maps.Geocoder();					
-				geocoder.geocode({ 'address': addr + ' Philippines' }, function (results, status) {					
+				geocoder.geocode({ 'address': addr + ' Philippines'}, function (results, status) {					
 					if (status == google.maps.GeocoderStatus.OK) {		
 						var xx=results[0].geometry.location.lng();			
 						var yy=results[0].geometry.location.lat();		
@@ -537,6 +537,7 @@ Ext.define('MyPath.mappanel',{
 				{ xtype: 'toolbar',
 				  dock: 'top',
 				  items: this.buildItems(),
+				  enableOverflow: true
 				}
 			]			
 		});		
