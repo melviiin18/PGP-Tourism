@@ -27,7 +27,7 @@ Ext.define('MyPath.Chooser.Window', {
     extend: 'Ext.panel.Panel',      
 	TPanel:'',	 
 	mappanel:'',    
-    width : 330,
+    width : 300,
     title : 'Choose a layer',	
 	collapsible:true,				
 	layout:'fit',    

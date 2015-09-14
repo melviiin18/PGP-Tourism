@@ -12,6 +12,7 @@ Ext.application({
     name: 'OL3EXT4',	
 	requires:[
 		'MyPath.LoadedLayerContextMenu',
+		'MyPath.MeasureTool',
 		'MyPath.Utilities',
 		'MyPath.LayerFilter',
 		'MyPath.mappanel',				
