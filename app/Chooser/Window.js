@@ -25,6 +25,7 @@ If you are unsure which license is appropriate for your use, please contact the 
 
 Ext.define('MyPath.Chooser.Window', {
     extend: 'Ext.panel.Panel',      
+	html:'<img STYLE="position:absolute; TOP:160px; LEFT:160px; HEIGHT:10px; WIDTH:80px;" src="./icons/powered_by_google_on_white.png" class="info_image" ></img>, <img STYLE="position:absolute; TOP:410px; LEFT:160px; HEIGHT:10px; WIDTH:80px;" src="./icons/powered_by_google_on_white.png" class="info_image" ></img>',
 	TPanel:'',	 
 	mappanel:'',    
     width : 300,
@@ -175,10 +176,17 @@ Ext.define('MyPath.Chooser.Window', {
 
 	createMarker: function(place, vLayer, icon){			
 		var pointFeatures=[]
-		console.log(place);		
+		console.log(place);						
+		
 	     for (var i = 0; i < place.length; i++) {		   
-			 
-		   var point = new OpenLayers.Geometry.Point(place[i].geometry.location.K,place[i].geometry.location.G).transform('EPSG:4326','EPSG:900913')
+		
+		   
+				
+		   var xKey = Object.keys(place[i].geometry.location)[0]
+		   var yKey = Object.keys(place[i].geometry.location)[1]
+		   
+			console.log(xKey, yKey)
+		   var point = new OpenLayers.Geometry.Point(place[i].geometry.location[yKey],place[i].geometry.location[xKey]).transform('EPSG:4326','EPSG:900913')
 		   var PointAttr = {'name':place[i].name,'type':place[i].types[0], 'vicinity':place[i].vicinity }
 		   var pointFeature = new OpenLayers.Feature.Vector(point, PointAttr, {
 				pointRadius: 16,

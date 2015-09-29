@@ -2,7 +2,7 @@
 
 Ext.define('MyPath.mappanel',{
 	extend:'GeoExt.panel.Map',
-	alias:'Widget.mappanel',	
+	alias:'Widget.mappanel',		
 	title: "Philippine Geoportal - Tourism",   			
 	layout:'border',	
 	region:'center',
@@ -715,7 +715,7 @@ Ext.define('MyPath.mappanel',{
 		//
 
 		
-		Ext.apply(this, {
+		Ext.apply(this, {			
 			map:map,
 			dockedItems: [
 				{ xtype: 'toolbar',
