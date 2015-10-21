@@ -186,7 +186,7 @@ Ext.define('MyPath.Chooser.Window', {
 		   var yKey = Object.keys(place[i].geometry.location)[1]
 		   
 			console.log(xKey, yKey)
-		   var point = new OpenLayers.Geometry.Point(place[i].geometry.location[yKey],place[i].geometry.location[xKey]).transform('EPSG:4326','EPSG:900913')
+		   var point = new OpenLayers.Geometry.Point(place[i].geometry.location[yKey](),place[i].geometry.location[xKey]()).transform('EPSG:4326','EPSG:900913')
 		   var PointAttr = {'name':place[i].name,'type':place[i].types[0], 'vicinity':place[i].vicinity }
 		   var pointFeature = new OpenLayers.Feature.Vector(point, PointAttr, {
 				pointRadius: 16,
