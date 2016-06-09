@@ -25,7 +25,6 @@ If you are unsure which license is appropriate for your use, please contact the 
 
 Ext.define('MyPath.Chooser.Window', {
     extend: 'Ext.panel.Panel',      
-	html:'<img STYLE="position:absolute; TOP:160px; LEFT:160px; HEIGHT:10px; WIDTH:80px;" src="./icons/powered_by_google_on_white.png" class="info_image" ></img>, <img STYLE="position:absolute; TOP:410px; LEFT:160px; HEIGHT:10px; WIDTH:80px;" src="./icons/powered_by_google_on_white.png" class="info_image" ></img>',
 	TPanel:'',	 
 	mappanel:'',    
     width : 300,
@@ -36,9 +35,6 @@ Ext.define('MyPath.Chooser.Window', {
     bodyBorder: false,
 	loadLayer:function(selectedImage){
 		var me = this
-		
-		if (!selectedImage) return;
-		
 		var layername = selectedImage.data.name;
 		var layer = selectedImage.data.url;
 		var isWMS=	selectedImage.data.isWms;
@@ -50,7 +46,6 @@ Ext.define('MyPath.Chooser.Window', {
 		};
 		
 		if (!isWMS){			
-			
 			var icon='./app/chooser/icons/' + layername + '.png'
 			var vectorLayer = new OpenLayers.Layer.Vector(layername, {									
 				styleMap: new OpenLayers.StyleMap({'default':{										
@@ -117,23 +112,14 @@ Ext.define('MyPath.Chooser.Window', {
 				type='bus station'
 			} */
 			
-			if (map.getZoom()>=8){
-				var request = {				
-					location:bounds.getCenter(),
-					//rankby:'distance',
-					radius: '3000',					
-					keyword:type	
-					
-					
-				};		
-			}else{
-				console.log(this.down('iconbrowser'));
-				this.down('iconbrowser').deselect(selectedImage.index);
-				alertify.error('Please zoom in (at leat 8 zoom level) to your location of interest using the zoom tool or the location search');
-				return;
-			}	
-			
-			
+			var request = {				
+				location:bounds.getCenter(),
+				//rankby:'distance',
+				radius: '3000',					
+				keyword:type	
+				
+				
+			};			
 			var service = new google.maps.places.PlacesService(me.mappanel.map.baseLayer.div);			
 			service.nearbySearch(request, function callback(results, status, pagination){
 					
@@ -189,17 +175,10 @@ Ext.define('MyPath.Chooser.Window', {
 
 	createMarker: function(place, vLayer, icon){			
 		var pointFeatures=[]
-		console.log(place);						
-		
+		console.log(place);		
 	     for (var i = 0; i < place.length; i++) {		   
-		
-		   
-				
-		   var xKey = Object.keys(place[i].geometry.location)[0]
-		   var yKey = Object.keys(place[i].geometry.location)[1]
-		   
-			console.log(xKey, yKey)
-		   var point = new OpenLayers.Geometry.Point(place[i].geometry.location[yKey](),place[i].geometry.location[xKey]()).transform('EPSG:4326','EPSG:900913')
+			 
+		   var point = new OpenLayers.Geometry.Point(place[i].geometry.location.K,place[i].geometry.location.G).transform('EPSG:4326','EPSG:900913')
 		   var PointAttr = {'name':place[i].name,'type':place[i].types[0], 'vicinity':place[i].vicinity }
 		   var pointFeature = new OpenLayers.Feature.Vector(point, PointAttr, {
 				pointRadius: 16,
@@ -248,23 +227,47 @@ Ext.define('MyPath.Chooser.Window', {
 	onIconSelect: function(dataview, selections) {
 	
 		var me=this;
-		console.log(this.down('iconbrowser'));
-		
 		var selectedImage = this.down('iconbrowser').selModel.getSelection()[0];
-		console.log(selectedImage);
-		
-		//return;
-		
-		
+			
 		if(this.mappanel.map.getLayersByName('My Location').length > 0) {				
 			this.mappanel.map.getLayersByName('My Location')[0].destroy();					
 		};	
 		
-		//load the layer				
-		me.loadLayer(selectedImage);
 		
-		
-		
+		if (this.mappanel.dockedItems.items[1].getComponent('rbt1').checked){	
+			
+			if(this.mappanel.map.getLayersByName('Gcode').length > 0) {				
+				this.mappanel.map.getLayersByName('Gcode')[0].destroy();					
+			};		
+			
+			if (navigator.geolocation) {   
+				/** Overlay current location*/		
+				navigator.geolocation.getCurrentPosition(
+					function(position){					
+						var currLoc = new OpenLayers.Geometry.Point(position.coords.longitude,position.coords.latitude).transform('EPSG:4326', 'EPSG:900913');						
+						var Location = new OpenLayers.Layer.Vector(	'My Location', {
+								styleMap: new OpenLayers.StyleMap({'default':{
+										externalGraphic: "./app/chooser/icons/MyLocation.png",				
+										graphicYOffset: -25,
+										graphicHeight: 35,
+										graphicTitle: "You're here"
+								}}) ,
+								displayInLayerSwitcher: false,		
+								
+							});		
+						Location.addFeatures([new OpenLayers.Feature.Vector(currLoc)]);						
+						me.mappanel.map.addLayers([Location]);												
+						me.mappanel.map.zoomToExtent(Location.getDataExtent());	
+						me.loadLayer(selectedImage);	
+						}
+				)		
+				
+			} else {
+				console.log("Geolocation is not supported by this browser.");
+			}
+		}else{
+			me.loadLayer(selectedImage);		
+		}
 		
     },  
 	
@@ -272,11 +275,9 @@ Ext.define('MyPath.Chooser.Window', {
      * Fires the 'selected' event, informing other components that an image has been selected
      */
     fireImageSelected: function() {
-	 
-	    var selectedImage = this.down('iconbrowser').selModel.getSelection()[0];     
-		
+        var selectedImage = this.down('iconbrowser').selModel.getSelection()[0];        
         if (selectedImage) {
-          //  this.fireEvent('selected', selectedImage);
+            this.fireEvent('selected', selectedImage);
         
         }
     }

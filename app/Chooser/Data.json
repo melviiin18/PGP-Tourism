@@ -44,7 +44,7 @@
 		isWms:false
     },		
 	{
-        name: 'Hospital andHealth<br>Center (DOH)',
+        name: 'Hospital and Health<br>Center (DOH)',
         thumb: 'hospital.png',
         url: 'hf_updated_02112015',
         tooltip: '',

@@ -27,7 +27,6 @@ Ext.define('MyPath.Chooser.IconBrowser', {
     uses: 'Ext.data.Store',    
     singleSelect: true,
 	padding:40,		
-	
     overItemCls: 'x-view-over',
     itemSelector: 'div.thumb-wrap',
     tpl: [

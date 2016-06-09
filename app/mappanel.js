@@ -2,7 +2,7 @@
 
 Ext.define('MyPath.mappanel',{
 	extend:'GeoExt.panel.Map',
-	alias:'Widget.mappanel',		
+	alias:'Widget.mappanel',	
 	title: "Philippine Geoportal - Tourism",   			
 	layout:'border',	
 	region:'center',
@@ -56,7 +56,7 @@ Ext.define('MyPath.mappanel',{
 				toggleGroup: 'navigation',
 				allowDepress: false,
 				tooltip: 'Zoom in',
-				handler: function() {
+				handler: function() {				
 				  if (navigator.appName == "Microsoft Internet Explorer") {
 					me.body.applyStyles('cursor:url("img/zoom_in.cur")');
 				  }
@@ -133,6 +133,7 @@ Ext.define('MyPath.mappanel',{
 			{	
 				xtype:'radiofield',
 				boxLabel:'Use current location',
+				hidden:true,
 				name:'rb',				
 				itemId:'rbt1',								
 				checked: true,		
@@ -149,6 +150,7 @@ Ext.define('MyPath.mappanel',{
 			{	
 				xtype:'radiofield',
 				boxLabel:'Location Search',	
+				hidden:true,
 				name:'rb',					
 				itemId:'rbt2',								
 				checked: false,		
@@ -159,11 +161,11 @@ Ext.define('MyPath.mappanel',{
 		//search field
 		items.push(
 			{
-				xtype:'textfield',									
+				xtype:'textfield',
+				text:'Location search',	
 				itemId:'Search',
 				width:200,
-				emptyText:'Location Search',
-				disabled:true,
+				emptyText:'Location Search',				
 
 			}
 		);
@@ -202,7 +204,10 @@ Ext.define('MyPath.mappanel',{
 							});							
 							Location.addFeatures([new OpenLayers.Feature.Vector(currLoc)]);						
 							me.map.addLayer(Location);						
-							me.map.zoomToExtent(Location.getDataExtent());			 		
+							me.map.zoomToExtent(Location.getDataExtent());	
+							
+							//
+							//handleZoom();	
 						})	
 					}else{
 						Ext.Msg.alert('Message', 'Please enter a location');
@@ -217,6 +222,7 @@ Ext.define('MyPath.mappanel',{
 			{	
 				xtype:'button',
 				tooltip:'My current location',
+				hidden:true,
 				name:'rb',				
 				itemId:'btnLoc',
 				scale:'large',				
@@ -268,11 +274,15 @@ Ext.define('MyPath.mappanel',{
 				width:25,
 				height:25,
 				handler:function(){
-					var me=this.up().up();									
-					OthoExtent = new OpenLayers.Bounds(120.613472,14.295979, 121.550385,14.827789).transform('EPSG:4326','EPSG:900913')
+				
 					
+					
+					//var me=this.up().up();									
+					OthoExtent = new OpenLayers.Bounds(120.613472,14.295979, 121.550385,14.827789).transform('EPSG:4326','EPSG:900913')					
 					var lonlat = new OpenLayers.LonLat(121,14).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913"));
-					map.setCenter(lonlat);
+					var center = new OpenLayers.LonLat(13610082.099764,1403622.1394924)
+					map.setCenter(center);
+					
 					if (map.baseLayer.name=="BING Aerial Map")
 						map.zoomTo(5);
 					else if (map.baseLayer.name=="OpenStreetMap")					  
@@ -283,8 +293,10 @@ Ext.define('MyPath.mappanel',{
 						map.zoomTo(6);		
 					else if (map.baseLayer.name=="Ortho Image 2011 - Metro Manila")	
 						map.zoomToExtent(OthoExtent);
-					else
-						map.zoomTo(1);
+					else	
+						map.zoomTo(1);		
+						Ext.ComponentQuery.query('#zoomLabel')[0].setText('Zoom level: 0');						
+						
 				}
 			}
 		);
@@ -332,6 +344,17 @@ Ext.define('MyPath.mappanel',{
 			
 			}
 		)
+		
+		items.push(
+			
+			{
+				xtype:'tbtext',
+				itemId:'zoomLabel',
+				text: 'Zoom level:0'
+			
+			}
+			
+		);
 		
 		items.push(
 			'->',
@@ -417,11 +440,7 @@ Ext.define('MyPath.mappanel',{
 							this.up('toolbar').getComponent('basemapLabel').setText('Basemap : ' + this.text);
 						}
 					},
-					'-',
-					{
-						text: '&nbsp &nbsp &nbsp &nbsp<b>NOTE:</b><br/>&nbsp &nbsp &nbsp &nbspWE HAVE OBSERVED SOME DISCREPANCIES <br/>&nbsp &nbsp &nbsp &nbspBY AS MUCH AS 10 METERS WHEN USING BASEMAPS<br/>&nbsp &nbsp &nbsp &nbspOTHER THAN THE NAMRIA BASEMAPS AND<br/>&nbsp &nbsp &nbsp &nbspORTHO IMAGE 2011-METRO MANILA.  USERS ARE <br/>&nbsp &nbsp &nbsp &nbspADVISED TO TAKE THE NECESSARY PRECAUTIONS<br/>&nbsp &nbsp &nbsp &nbspESPECIALLY WHEN VIEWING THE ACTIVE FAULTS<br/>&nbsp &nbsp &nbsp &nbsp(VALLEY FAULT SYSTEM) USING OTHER BASEMAPS.',
-						plain: true
-					}
+					
 			   ]
 				
 			}
@@ -566,7 +585,8 @@ Ext.define('MyPath.mappanel',{
 		
 		
 		map.addLayers([pgp_basemap_cache,pgp_ortho_mm_cache,bing_aerial, arcgis_world_imagery, osm, google_satellite, Location, Location2]);		
-		map.zoomToMaxExtent()		
+		//map.zoomToMaxExtent()		
+		
 		
 		
 		//new identify feature 
@@ -713,17 +733,33 @@ Ext.define('MyPath.mappanel',{
 		this.pgsGetFeatureInfo.activate();
 		
 		//
-
 		
-		Ext.apply(this, {			
+		 function handleZoom(event) {
+			var zoomVal= map.getZoom();
+			//zoomVal=zoomVal+1;
+			
+			Ext.ComponentQuery.query('#zoomLabel')[0].setText('Zoom level: ' + zoomVal);
+			//this.up('panel').down('toolbar').getComponent('zoomLabel').setValue('test');
+			
+		} 
+		
+		map.events.register('moveend', map, handleZoom) 
+		// 
+		
+		
+		
+		Ext.apply(this, {
 			map:map,
 			dockedItems: [
 				{ xtype: 'toolbar',
 				  dock: 'top',
 				  items: this.buildItems(),
 				  enableOverflow: true
-				}
-			]			
+				},
+				
+			],
+			center: new OpenLayers.LonLat(13610082.099764,1403622.1394924),
+			zoom:1
 		});		
 		this.callParent();   
     }	
